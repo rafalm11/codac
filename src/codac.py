@@ -6,12 +6,12 @@ from sys import argv
 def getParameters(params):
     #function takes parameters list to ease testing
     parser = ArgumentParser(
-        prog='CodacJoiner',
-        description='joins customer personal data with accounts')
+        prog='codac.py',
+        description='joins customer personal data with its accounts')
     parser.add_argument('-pf', '-personalFile', dest='personalFileName', type=str, help="consumer's personal data file (csv)", required=True, metavar='fileName')
     parser.add_argument('-af', '-accountsFile', dest='accountsFileName', type=str, help="consumer's accounts data file (csv)", required=True, metavar='fileName')
     parser.add_argument('-c', '-countryFilter', dest='countryFilter', type=str, 
-        help='list of countries to filter by', required=False, default ='Netherlands', metavar='countryName', nargs='*')
+        help='list of countries to filter by (default: Netherlands)', required=False, default ='Netherlands', metavar='countryName', nargs='*')
     args = parser.parse_args(params)
     return args.personalFileName, args.accountsFileName, args.countryFilter
 
