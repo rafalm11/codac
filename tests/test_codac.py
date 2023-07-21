@@ -19,3 +19,9 @@ def test_parameters_displaced_countries():
 def test_missing_file_names():
     with pytest.raises(SystemExit) as info: 
         getParameters(['-c','c1'])
+
+
+
+def test_log(caplog):
+    getParameters(['-p','aaa.csv','-a','bbb.csv'])
+    assert 'getParameters started' in caplog.text
