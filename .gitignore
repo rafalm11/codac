@@ -162,3 +162,7 @@ cython_debug/
 
 # logs folder
 logs/
+
+# client data folder
+client_input/
+client_data/

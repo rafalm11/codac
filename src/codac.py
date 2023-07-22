@@ -2,12 +2,13 @@
 
 from argparse import ArgumentParser
 from sys import argv
+from sys import stdout
 from logging.handlers import RotatingFileHandler
 import logging
 
+from pyspark.sql import SparkSession
 
-
-def getParameters(params):
+def getParameters(params: list):
     #function takes parameters list to ease testing
     logger.debug('getParameters started')
     parser = ArgumentParser(
@@ -28,25 +29,56 @@ def getParameters(params):
     args = parser.parse_args(params)
     return args.personalFileName, args.accountsFileName, args.outputFolderName, args.countryFilter, args.sparkUrl
 
-def loggerInit(loggerName):    
+def loggerInit(loggerName: str):    
     loggerI = logging.getLogger(loggerName)
     loggerI.setLevel(level=logging.DEBUG)    
-    handler = logging.handlers.RotatingFileHandler('logs\\test.log',maxBytes=1000,backupCount=5)
-    handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-    loggerI.addHandler(handler)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handlerFile = logging.handlers.RotatingFileHandler('logs\\test.log',maxBytes=10000,backupCount=5)
+    handlerFile.setFormatter(formatter)
+    loggerI.addHandler(handlerFile)
+    handlerConsole = logging.StreamHandler(stdout)
+    handlerConsole.setFormatter(formatter)
+    loggerI.addHandler(handlerConsole)
     loggerI.debug('loggerInit finished')
     return loggerI
     
 logger = loggerInit(__name__)
 
+
+
 def main():
-    logger.debug('main started')
+    logger.info('main started')
     personalFileName, accountsFileName, outputFolderName, countryFilter, sparkUrl  = getParameters(argv[1:])
-    print (personalFileName)
-    print (accountsFileName)
-    print (outputFolderName)
-    print (countryFilter)
-    print (sparkUrl)
+    logger.debug('parameters. p:'+personalFileName+' a:'+accountsFileName+' o:'+outputFolderName+' c:'+str(countryFilter)+' u:'+sparkUrl)
+    
+    sparkSession = SparkSession.builder.appName('codac').master(sparkUrl).getOrCreate()
+    logger.debug('spark session created')
+
+    dfPersonal = sparkSession.read.csv(path=personalFileName,header=True)
+    logger.info('opened Personal DataFrame from file:'+personalFileName)
+
+    dfAccounts = sparkSession.read.csv(path=accountsFileName,header=True)
+    logger.info('opened Accounts DataFrame from file:'+accountsFileName)
+
+    dfOut = dfPersonal.select('id','email','country')
+    logger.debug('created Out Dataframe with removed columns from Personal DataFrame')
+
+    dfOut = dfOut.filter(dfPersonal.country.isin(countryFilter))
+    logger.debug('filtered columns on Out DataFrame')
+
+    dfOut = dfOut.join(dfAccounts,on=dfPersonal.id==dfAccounts.id,how='inner')
+    logger.debug('joined with Accounts DataFrame')
+
+    dfOut = dfOut.drop(dfAccounts.id)
+    logger.debug('removed duplicated join column from Out Dataframe')
+
+    dfOut = dfOut.withColumnsRenamed({'id':'client_identifier','btc_a':'bitcoin_address','cc_t':'credit_card_type'})
+    logger.debug('renamed columns on Out DataFrame')
+
+    logger.debug('dfOut count:'+str(dfOut.count()))
+
+    dfOut.write.csv(outputFolderName,header=True)
+    logger.info('saved Out Dataframe to folder:'+outputFolderName)
 
 if __name__ == '__main__':
     main()
