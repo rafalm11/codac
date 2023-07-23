@@ -17,20 +17,26 @@ and produces output file:
     client_identifier(sourced from id)|email|country|bitcoin_address(sourced from btc_a)|credit_card_type(sourced from cc_t)|cc_n
 
 
-usage: codac.py [-h] -pf fileName -af fileName
-             [-c [countryName [countryName ...]]]
+usage: codac.py [-h] -p <fileName> -a <fileName> [-o <folderName>]
+                [-c [<countryName> [<countryName> ...]]] [-s <url>]
 
 joins customer personal data with its accounts
 
 optional arguments:
   -h, --help            show this help message and exit
-  -pf fileName, -personalFile fileName
+  -p <fileName>, -personalFile <fileName>
                         consumer's personal data file (csv)
-  -af fileName, -accountsFile fileName
+  -a <fileName>, -accountsFile <fileName>
                         consumer's accounts data file (csv)
-  -c [countryName [countryName ...]], -countryFilter [countryName [countryName ...]]
-                        list of countries to filter by (default: Netherland)
+  -o <folderName>, -outputFolder <folderName>
+                        output data folder (will be overwritten.
+                        default:client_data)
+  -c [<countryName> [<countryName> ...]], -countryFilter [<countryName> [<countryName> ...]]
+                        list of countries to filter by (default: Netherlands)
+  -s <url>, -sparkUrl <url>
+                        spark instance url (default: local)
 
 use examples:
-python codac.py -pf dataset_one.csv -af dataset_two.csv -c 'United Kingdom' Netherlands
-python codac.py -pf dataset_one.csv -af dataset_two.csv
+python src/codac.py -p './client_input/dataset_one.csv' -a './client_input/dataset_two.csv'
+python src/codac.py -p './client_input/dataset_one.csv' -a './client_input/dataset_two.csv' -c 'United Kingdom' Netherlands
+

@@ -47,6 +47,7 @@ logger = loggerInit(__name__)
 from pyspark.sql import DataFrame
 from typing import Dict, List
 
+
 def customFilter(df: DataFrame, filterMap: Dict[str, List[str]]) -> DataFrame:
     logger.debug('customFilter started. filter:'+str(filterMap))
     for column,valuesList in filterMap.items():
