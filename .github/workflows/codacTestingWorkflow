@@ -1,0 +1,35 @@
+name: codacTestingWorkflow
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ "dev" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  unitTest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v3
+        
+      - name: python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+          
+      - name: application dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        
+      - name: test dependencies
+        run: pip install -r tests/requirements.txt
+        
+      - name: run test
+        run: python -m pytest
+
+      - name: Run a one-line script
+        run: echo workflow stopped
