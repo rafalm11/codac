@@ -28,8 +28,33 @@ jobs:
       - name: test dependencies
         run: pip install -r tests/requirements.txt
         
-      - name: run test
+      - name: run unit test
         run: python -m pytest
 
       - name: Run a one-line script
-        run: echo workflow stopped
+        run: echo unit tests finished
+
+  E2ETest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v3
+        
+      - name: python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+          
+      - name: application dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        
+      - name: application test run
+        run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data'
+
+      - name: compare expected result
+        run: diff tests/expected_client_data/part*.csv tests/client_data/part*.csv
+
+      - name: Run a one-line script
+        run: echo E2E tests finished
