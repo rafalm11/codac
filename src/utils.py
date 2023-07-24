@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 from logging.handlers import RotatingFileHandler
 import logging
-from sys import argv
 from sys import stdout
 from typing import Tuple
 

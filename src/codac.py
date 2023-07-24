@@ -1,3 +1,4 @@
+from sys import argv
 from typing import Dict, List
 from pyspark.sql import DataFrame, SparkSession
 from utils import getParameters, loggerInit
