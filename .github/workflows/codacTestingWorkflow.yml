@@ -60,7 +60,12 @@ jobs:
           pwd
         
       - name: application test run
-        run: python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
+        run: |
+          pwd
+          cd src
+          pwd
+          ls
+          python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
 
       - name: compare expected result (no diff expected)
         run: diff -q ../tests/expected_client_data/part*.csv client_data/part*.csv
