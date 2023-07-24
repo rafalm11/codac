@@ -27,10 +27,12 @@ jobs:
           mkdir logs
         
       - name: test dependencies
-        run: pip install -r tests/requirements.txt
+        run: pip install -r test_requirements.txt
         
       - name: run unit test
-        run: python -m pytest
+        run: |
+          cd src
+          python -m pytest ../tests
 
       - name: unit test finished
         run: echo unit tests finished
