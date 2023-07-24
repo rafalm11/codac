@@ -14,7 +14,8 @@ Application requires two input files:
     |id|btc_a|cc_t|cc_n|
     |---|---|---|---|
 - and joins them together creating output file:
-    |client_identifier (sourced from id)|email|country|bitcoin_address (sourced from btc_a)|credit_card_type (sourced from cc_t)|cc_n|
+    |client_identifier|email|country|bitcoin_address|credit_card_typels|cc_n|
+    |(sourced from id)|   |   |(sourced from btc_a)|(sourced from cc_t)|   |
     |---|---|---|---|---|---|
 
 ## use synatax

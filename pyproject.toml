@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codacJoiner"
+version = "1.0.0"
+readme = "README.md"
+requires-python = ">=3.7"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests", "doc"]
+
+[project.scripts]
+Codac = "codacJoiner.main:main"

@@ -32,7 +32,7 @@ jobs:
       - name: run unit test
         run: python -m pytest
 
-      - name: Run a one-line script
+      - name: unit test finished
         run: echo unit tests finished
 
   E2ETest:
@@ -56,7 +56,7 @@ jobs:
         run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data'
 
       - name: compare expected result (no diff expected)
-        run: diff tests/expected_client_data/part*.csv tests/client_data/part*.csv
+        run: diff -q tests/expected_client_data/part*.csv tests/client_data/part*.csv
 
       - name: application failing test run
         run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data' -c 'United Kingdom'
@@ -70,5 +70,5 @@ jobs:
             echo found differences. ok
           fi
 
-      - name: Run a one-line script
+      - name: E2E finished
         run: echo E2E tests finished
