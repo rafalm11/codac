@@ -33,7 +33,7 @@ def loggerInit(loggerName: str):
     loggerI = logging.getLogger(loggerName)
     loggerI.setLevel(level=logging.DEBUG)    
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handlerFile = logging.handlers.RotatingFileHandler('logs\\test.log',maxBytes=10000,backupCount=5)
+    handlerFile = logging.handlers.RotatingFileHandler('logs/test.log',maxBytes=10000,backupCount=5)
     handlerFile.setFormatter(formatter)
     loggerI.addHandler(handlerFile)
     handlerConsole = logging.StreamHandler(stdout)
@@ -93,7 +93,7 @@ def main():
 
     logger.debug('dfOut count:'+str(dfOut.count()))
 
-    dfOut.write.csv(outputFolderName,header=True)
+    dfOut.write.csv(outputFolderName,header=True,mode='overwrite')
     logger.info('saved Out Dataframe to folder:'+outputFolderName)
 
 if __name__ == '__main__':

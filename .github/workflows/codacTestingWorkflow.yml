@@ -24,12 +24,51 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          mkdir logs
         
       - name: test dependencies
         run: pip install -r tests/requirements.txt
         
-      - name: run test
+      - name: run unit test
         run: python -m pytest
 
-      - name: Run a one-line script
-        run: echo workflow stopped
+      - name: unit test finished
+        run: echo unit tests finished
+
+  E2ETest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v3
+        
+      - name: python setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+          
+      - name: application dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          mkdir logs
+        
+      - name: application test run
+        run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data'
+
+      - name: compare expected result (no diff expected)
+        run: diff -q tests/expected_client_data/part*.csv tests/client_data/part*.csv
+
+      - name: application failing test run
+        run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data' -c 'United Kingdom'
+
+      - name: compare expected result (diff expected)
+        run: |
+          if diff tests/expected_client_data/part*.csv tests/client_data/part*.csv; then
+            echo no differences. bad
+            exit 1
+          else
+            echo found differences. ok
+          fi
+
+      - name: E2E finished
+        run: echo E2E tests finished
