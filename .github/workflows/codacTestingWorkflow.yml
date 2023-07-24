@@ -55,7 +55,13 @@ jobs:
       - name: application test run
         run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data'
 
-      - name: compare expected result
+      - name: compare expected result (no diff expected)
+        run: diff tests/expected_client_data/part*.csv tests/client_data/part*.csv
+
+      - name: application failing test run
+        run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data' -c 'United Kingdom'
+
+      - name: compare expected result (diff expected)
         run: diff tests/expected_client_data/part*.csv tests/client_data/part*.csv
 
       - name: Run a one-line script
