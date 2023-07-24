@@ -62,7 +62,13 @@ jobs:
         run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data' -c 'United Kingdom'
 
       - name: compare expected result (diff expected)
-        run: diff tests/expected_client_data/part*.csv tests/client_data/part*.csv
+        run: |
+          if diff tests/expected_client_data/part*.csv tests/client_data/part*.csv; then
+            echo no differences. bad
+            exit 1
+          else
+            echo found differences. ok
+          fi
 
       - name: Run a one-line script
         run: echo E2E tests finished
