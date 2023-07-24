@@ -166,3 +166,6 @@ logs/
 # client data folder
 /client_input/
 client_data/
+
+#vscode extension
+.vscode/
