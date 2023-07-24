@@ -37,7 +37,7 @@ def test_custom_filter_2countries(spark,dfSource,sourceSchema):
 
     chispa.assert_df_equality(customFilter(dfSource,{'country':'country1'}),dfExpected)
 
-def test_customRename(spark,sourceData,sourceColumns, dfSource):
+def test_customRename(spark,sourceData, dfSource):
     dfExpected = spark.createDataFrame(sourceData,['firstname','lastname','country'])
 
     chispa.assert_df_equality(customRename(df=dfSource, renameMap={'name':'firstname','surname':'lastname'}),dfExpected)
