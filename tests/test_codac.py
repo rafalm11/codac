@@ -1,6 +1,7 @@
 import pytest
 import chispa
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType,StructField,StructType
 from codac import customFilter, customRename
 
 @pytest.fixture
@@ -20,7 +21,7 @@ def sourceSchema():
                         StructField("country", StringType())])
 
 @pytest.fixture
-def dfSource(spark,sourceData,sourceColumns):
+def dfSource(spark,sourceData,sourceSchema):
     return spark.createDataFrame(sourceData,sourceSchema)
 
 def test_customFilter_1country(spark,dfSource,sourceSchema):
