@@ -1,7 +1,8 @@
+from json import loads as json_loads
 from sys import argv
 from typing import Dict, List
 from pyspark.sql import DataFrame, SparkSession
-from utils import getParameters, loggerInit
+from utils import getConfig, getParameters, loggerInit
 
     
 logger = loggerInit(__name__)
@@ -25,10 +26,12 @@ def customRename(df: DataFrame, renameMap: Dict[str,str]) -> DataFrame:
 
 def main():
     logger.info('main started')
-    personalFileName, accountsFileName, outputFolderName, countryFilter, sparkUrl  = getParameters(argv[1:])
-    logger.debug(f'parameters. p:{personalFileName} a:{accountsFileName} o:{outputFolderName} c:{countryFilter} u:{sparkUrl}')
+    personalFileName, accountsFileName, countryFilter  = getParameters(argv[1:])
+    logger.debug(f'parameters. p:{personalFileName} a:{accountsFileName} c:{countryFilter}')
+
+    config = getConfig('codac.ini')
     
-    sparkSession = SparkSession.builder.appName('codac').master(sparkUrl).getOrCreate()
+    sparkSession = SparkSession.builder.appName('codac').master(config['SPARK']['sparkUrl']).getOrCreate()
     logger.debug('spark session created')
 
     dfPersonal = sparkSession.read.csv(path=personalFileName,header=True)
@@ -41,7 +44,7 @@ def main():
     logger.debug('created Out Dataframe with removed columns from Personal DataFrame')
 
     dfOut =  customFilter(dfOut,{'country':countryFilter})
-    logger.debug('filtered columns on Out DataFrame')
+    logger.debug(f'filtered columns on Out DataFrame with countryFilter:{countryFilter}')
 
     dfOut = dfOut.join(dfAccounts,on=dfPersonal.id==dfAccounts.id,how='inner')
     logger.debug('joined with Accounts DataFrame')
@@ -49,13 +52,13 @@ def main():
     dfOut = dfOut.drop(dfAccounts.id)
     logger.debug('removed duplicated join column from Out Dataframe')
 
-    dfOut = customRename(dfOut,{'id':'client_identifier','btc_a':'bitcoin_address','cc_t':'credit_card_type'})
-    logger.debug('renamed columns on Out DataFrame')
+    dfOut = customRename(dfOut,json_loads(config["LOGIC"]["renameMap"]))
+    logger.debug(f'renamed columns on Out DataFrame with renameMap:{json_loads(config["LOGIC"]["renameMap"])}')
 
     logger.debug('dfOut count:'+str(dfOut.count()))
 
-    dfOut.write.csv(outputFolderName,header=True,mode='overwrite')
-    logger.info(f'saved Out Dataframe to folder:{outputFolderName}')
+    dfOut.write.csv(config[SPARK][outputFolderName],header=True,mode='overwrite')
+    logger.info(f'saved Out Dataframe to folder:{config[SPARK][outputFolderName]}')
 
 if __name__ == '__main__':
     main()
