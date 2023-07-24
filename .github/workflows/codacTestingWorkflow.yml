@@ -57,6 +57,7 @@ jobs:
         run: |
           cd src
           mkdir logs
+          pwd
         
       - name: application test run
         run: python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
