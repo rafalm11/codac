@@ -13,8 +13,8 @@ Application requires two input files:
 - accounts data with below struncture (headers required):
     |id|btc_a|cc_t|cc_n|
     |---|---|---|---|
-- and produces output file:
-    |client_identifier(sourced from id)|email|country|bitcoin_address(sourced from btc_a)|credit_card_type(sourced from cc_t)|cc_n|
+- and joins them together creating output file:
+    |client_identifier (sourced from id)|email|country|bitcoin_address (sourced from btc_a)|credit_card_type (sourced from cc_t)|cc_n|
     |---|---|---|---|---|---|
 
 ## use synatax
