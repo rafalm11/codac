@@ -93,7 +93,7 @@ def main():
 
     logger.debug('dfOut count:'+str(dfOut.count()))
 
-    dfOut.write.csv(outputFolderName,header=True)
+    dfOut.write.csv(outputFolderName,header=True,mode='overwrite')
     logger.info('saved Out Dataframe to folder:'+outputFolderName)
 
 if __name__ == '__main__':
