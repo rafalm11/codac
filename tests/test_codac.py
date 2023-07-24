@@ -14,23 +14,25 @@ def sourceData():
             ('name3','surname3','country3'),
             ('name4','surname4','country4')]
 @pytest.fixture
-def sourceColumns():
-    return ['name','surname','country']
+def sourceSchema():
+    return StructType([StructField("name", StringType()),
+                        StructField("surname", StringType()),
+                        StructField("country", StringType())])
 
 @pytest.fixture
 def dfSource(spark,sourceData,sourceColumns):
-    return spark.createDataFrame(sourceData,sourceColumns)
+    return spark.createDataFrame(sourceData,sourceSchema)
 
-def test_customFilter_1country(spark,dfSource):
+def test_customFilter_1country(spark,dfSource,sourceSchema):
     dfExpected = spark.createDataFrame([('name1','surname1','country1'),
                                 ('name2','surname2','country1'),                                
-                                ('name4','surname4','country4')],['name','surname','country'])
+                                ('name4','surname4','country4')],sourceSchema)
 
     chispa.assert_df_equality(customFilter(dfSource,{'country':['country1','country4']}),dfExpected)
 
-def test_custom_filter_2countries(spark,dfSource):
+def test_custom_filter_2countries(spark,dfSource,sourceSchema):
     dfExpected = spark.createDataFrame([('name1','surname1','country1'),
-                                ('name2','surname2','country1')],['name','surname','country'])
+                                ('name2','surname2','country1')],sourceSchema)
 
     chispa.assert_df_equality(customFilter(dfSource,{'country':'country1'}),dfExpected)
 
