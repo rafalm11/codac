@@ -9,10 +9,13 @@ Application purpose is to join two files of data in a single one containing data
 Application requires two input files:
 - consumers personal data with below structure (headers required):
     |id|first_name|last_name|email|country|
+    |---|---|---|---|---|
 - accounts data with below struncture (headers required):
     |id|btc_a|cc_t|cc_n|
+    |---|---|---|---|
 - and produces output file:
     |client_identifier(sourced from id)|email|country|bitcoin_address(sourced from btc_a)|credit_card_type(sourced from cc_t)|cc_n|
+    |---|---|---|---|---|---|
 
 ## use synatax
 '''

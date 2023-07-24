@@ -33,7 +33,7 @@ def loggerInit(loggerName: str):
     loggerI = logging.getLogger(loggerName)
     loggerI.setLevel(level=logging.DEBUG)    
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handlerFile = logging.handlers.RotatingFileHandler('logs\\test.log',maxBytes=10000,backupCount=5)
+    handlerFile = logging.handlers.RotatingFileHandler('logs/test.log',maxBytes=10000,backupCount=5)
     handlerFile.setFormatter(formatter)
     loggerI.addHandler(handlerFile)
     handlerConsole = logging.StreamHandler(stdout)
