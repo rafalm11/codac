@@ -165,5 +165,4 @@ logs/
 
 # client data folder
 /client_input/
-/client_data/
-/tests/client_data/
+client_data/

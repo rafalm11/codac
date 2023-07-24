@@ -52,13 +52,13 @@ def main():
     dfOut = dfOut.drop(dfAccounts.id)
     logger.debug('removed duplicated join column from Out Dataframe')
 
-    dfOut = customRename(dfOut,json_loads(config["LOGIC"]["renameMap"]))
+    dfOut = customRename(dfOut,json_loads(config['LOGIC']['renameMap']))
     logger.debug(f'renamed columns on Out DataFrame with renameMap:{json_loads(config["LOGIC"]["renameMap"])}')
 
     logger.debug('dfOut count:'+str(dfOut.count()))
 
-    dfOut.write.csv(config[SPARK][outputFolderName],header=True,mode='overwrite')
-    logger.info(f'saved Out Dataframe to folder:{config[SPARK][outputFolderName]}')
+    dfOut.write.csv(config['SPARK']['outputFolderName'],header=True,mode='overwrite')
+    logger.info(f'saved Out Dataframe to folder:{config["SPARK"]["outputFolderName"]}')
 
 if __name__ == '__main__':
     main()
