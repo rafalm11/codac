@@ -18,7 +18,7 @@ Application requires two input files:
     |---|---|---|---|---|---|
 
 ## use synatax
-'''
+```
 usage: codac.py [-h] -p <fileName> -a <fileName> [-o <folderName>]
                 [-c [<countryName> [<countryName> ...]]] [-s <url>]
 
@@ -37,8 +37,10 @@ optional arguments:
                         list of countries to filter by (default: Netherlands)
   -s <url>, -sparkUrl <url>
                         spark instance url (default: local)
-'''
+```
+
 ## use examples
 > python src/codac.py -p './client_input/dataset_one.csv' -a './client_input/dataset_two.csv'
+
 > python src/codac.py -p './client_input/dataset_one.csv' -a './client_input/dataset_two.csv' -c 'United Kingdom' Netherlands
 
