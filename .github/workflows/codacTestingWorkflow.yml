@@ -26,8 +26,8 @@ jobs:
           pip install -r requirements.txt
           mkdir src/logs
         
-      - name: test dependencies
-        run: pip install -r test_requirements.txt
+      - name: install test dependencies
+        run: pip install -r requirements_test.txt
         
       - name: run unit test
         run: |
@@ -61,24 +61,20 @@ jobs:
         run: |
           pip install ./dist/codacJoiner-1.0.0.tar.gz
           pip list
+          mkdir logs
         
       - name: application test run
         run: |
-          pwd
-          mkdir temp
-          cd temp
-          pwd
-          mkdir logs
+          pwd        
+          cd src
+          pwd          
           ls
-          python codac.py -p '${GITHUB_WORKSPACE}/tests/client_input/dataset_one.csv' -a '${GITHUB_WORKSPACE}/tests/client_input/dataset_two.csv'
+          python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
 
       - name: compare expected result (no diff expected)
         run: |
-          pwd
-          cd temp
-          pwd
-          ls
-          diff -q $GITHUB_WORKSPACE/tests/expected_client_data/part*.csv client_data/part*.csv
+          
+          diff -q ../tests/expected_client_data/part*.csv client_data/part*.csv
 
       - name: application failing test run
         run: |
@@ -86,7 +82,7 @@ jobs:
           cd temp
           pwd
           ls
-          python codac.py -p '${GITHUB_WORKSPACE}/tests/client_input/dataset_one.csv' -a '${GITHUB_WORKSPACE}/tests/client_input/dataset_two.csv' -c 'United Kingdom'
+          python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv' -c 'United Kingdom'
 
       - name: compare expected result (diff expected)
         run: |
@@ -94,7 +90,7 @@ jobs:
           cd temp
           pwd
           ls
-          if diff -q $GITHUB_WORKSPACE/tests/expected_client_data/part*.csv client_data/part*.csv; then
+          if diff -q ../tests/expected_client_data/part*.csv client_data/part*.csv; then
             echo no differences. bad
             exit 1
           else
