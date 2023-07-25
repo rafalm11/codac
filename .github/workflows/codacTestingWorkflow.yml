@@ -72,25 +72,20 @@ jobs:
           python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
 
       - name: compare expected result (no diff expected)
-        run: |
-          
-          diff -q ../tests/expected_client_data/part*.csv client_data/part*.csv
+        run: |          
+          diff -q tests/expected_client_data/part*.csv src/client_data/part*.csv
 
       - name: application failing test run
         run: |
           pwd
-          cd temp
+          cd src
           pwd
           ls
           python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv' -c 'United Kingdom'
 
       - name: compare expected result (diff expected)
         run: |
-          pwd
-          cd temp
-          pwd
-          ls
-          if diff -q ../tests/expected_client_data/part*.csv client_data/part*.csv; then
+          if diff -q tests/expected_client_data/part*.csv src/client_data/part*.csv; then
             echo no differences. bad
             exit 1
           else
