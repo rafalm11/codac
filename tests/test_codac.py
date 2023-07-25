@@ -63,7 +63,7 @@ def test_custom_filter_2_countries(spark, df_source, source_schema):
 
 
 def test_custom_rename(spark, source_data, df_source):
-    dfE_expected = spark.createDataFrame(source_data, ["firstname", "lastname", "country"])
+    df_expected = spark.createDataFrame(source_data, ["firstname", "lastname", "country"])
 
     chispa.assert_df_equality(
         custom_rename(
