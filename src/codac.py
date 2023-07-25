@@ -47,7 +47,7 @@ def main():
     df_out = df_personal.select("id", "email", "country")
     logger.debug("created Out Dataframe with removed columns from Personal DataFrame")
 
-    df_out = custom_filter(dfOut, {"country": country_filter})
+    df_out = custom_filter(df_out, {"country": country_filter})
     logger.debug(
         f"filtered columns on Out DataFrame with countryFilter:{country_filter}"
     )
@@ -58,7 +58,7 @@ def main():
     df_out = df_out.drop(df_accounts.id)
     logger.debug("removed duplicated join column from Out Dataframe")
 
-    df_out = custom_rename(dfOut, json_loads(config["LOGIC"]["renameMap"]))
+    df_out = custom_rename(df_out, json_loads(config["LOGIC"]["renameMap"]))
     logger.debug(
         f'renamed columns on Out DataFrame with renameMap:{json_loads(config["LOGIC"]["renameMap"])}'
     )
