@@ -63,12 +63,9 @@ jobs:
           pip list
         
       - name: application test run
-        run: |
-          pwd        
-          cd src
-          pwd   
+        run: |             
+          cd src          
           mkdir logs       
-          ls
           python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
 
       - name: compare expected result (no diff expected)
@@ -77,10 +74,6 @@ jobs:
 
       - name: application failing test run
         run: |
-          pwd
-          cd src
-          pwd
-          ls
           python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv' -c 'United Kingdom'
 
       - name: compare expected result (diff expected)
