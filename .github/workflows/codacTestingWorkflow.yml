@@ -61,13 +61,13 @@ jobs:
         run: |
           pip install ./dist/codacJoiner-1.0.0.tar.gz
           pip list
-          mkdir logs
         
       - name: application test run
         run: |
           pwd        
           cd src
-          pwd          
+          pwd   
+          mkdir logs       
           ls
           python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
 
