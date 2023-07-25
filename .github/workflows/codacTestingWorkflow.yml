@@ -24,13 +24,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          mkdir logs
+          mkdir src/logs
         
-      - name: test dependencies
-        run: pip install -r tests/requirements.txt
+      - name: install test dependencies
+        run: pip install -r requirements_test.txt
         
       - name: run unit test
-        run: python -m pytest
+        run: |
+          cd src
+          python -m pytest ../tests
 
       - name: unit test finished
         run: echo unit tests finished
@@ -46,24 +48,38 @@ jobs:
         with:
           python-version: '3.7'
           
-      - name: application dependencies
+      - name: install pip package
+        run: python -m pip install --upgrade pip
+
+      - name: install build package
+        run: python -m pip install build
+
+      - name: building codacJoiner
+        run: python -m build
+
+      - name: install codacJoiner package
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          mkdir logs
+          pip install ./dist/codacJoiner-1.0.0.tar.gz
+          pip list
         
       - name: application test run
-        run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data'
+        run: |             
+          cd src          
+          mkdir logs       
+          python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv'
 
       - name: compare expected result (no diff expected)
-        run: diff -q tests/expected_client_data/part*.csv tests/client_data/part*.csv
+        run: |          
+          diff -q tests/expected_client_data/part*.csv src/client_data/part*.csv
 
       - name: application failing test run
-        run: python src/codac.py -p 'tests/client_input/dataset_one.csv' -a 'tests/client_input/dataset_two.csv' -o 'tests/client_data' -c 'United Kingdom'
+        run: |
+          cd src
+          python codac.py -p '../tests/client_input/dataset_one.csv' -a '../tests/client_input/dataset_two.csv' -c 'United Kingdom'
 
       - name: compare expected result (diff expected)
         run: |
-          if diff tests/expected_client_data/part*.csv tests/client_data/part*.csv; then
+          if diff -q tests/expected_client_data/part*.csv src/client_data/part*.csv; then
             echo no differences. bad
             exit 1
           else

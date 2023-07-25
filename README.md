@@ -20,8 +20,8 @@ Application requires two input files:
 
 ## use synatax
 ```
-usage: codac.py [-h] -p <fileName> -a <fileName> [-o <folderName>]
-                [-c [<countryName> [<countryName> ...]]] [-s <url>]
+usage: codac.py [-h] -p <fileName> -a <fileName>
+                [-c [<countryName> [<countryName> ...]]]
 
 joins customer personal data with its accounts
 
@@ -31,13 +31,9 @@ optional arguments:
                         consumer's personal data file (csv)
   -a <fileName>, -accountsFile <fileName>
                         consumer's accounts data file (csv)
-  -o <folderName>, -outputFolder <folderName>
-                        output data folder (will be overwritten.
-                        default:client_data)
   -c [<countryName> [<countryName> ...]], -countryFilter [<countryName> [<countryName> ...]]
-                        list of countries to filter by (default: Netherlands)
-  -s <url>, -sparkUrl <url>
-                        spark instance url (default: local)
+                        list of countries to filter by (default: specified in
+                        utils.ini)
 ```
 
 ## use examples

@@ -1,100 +1,76 @@
-#codac app main module
-
-from argparse import ArgumentParser
+from json import loads as json_loads
 from sys import argv
-from sys import stdout
-from logging.handlers import RotatingFileHandler
-import logging
-
-from pyspark.sql import SparkSession
-
-def getParameters(params: list):
-    #function takes parameters list to ease testing
-    logger.debug('getParameters started')
-    parser = ArgumentParser(
-        prog='codac.py',
-        description='joins customer personal data with its accounts')
-    #required parameters
-    parser.add_argument('-p', '-personalFile', dest='personalFileName', type=str, help="consumer's personal data file (csv)", required=True, metavar='<fileName>')
-    parser.add_argument('-a', '-accountsFile', dest='accountsFileName', type=str, help="consumer's accounts data file (csv)", required=True, metavar='<fileName>')
-
-    #optional paarmeters
-    parser.add_argument('-o', '-outputFolder', dest='outputFolderName', type=str, help="output data folder (will be overwritten. default:client_data)", 
-        required=False, metavar='<folderName>', default='client_data')
-    parser.add_argument('-c', '-countryFilter', dest='countryFilter', type=str, 
-        help='list of countries to filter by (default: Netherlands)', required=False, default ='Netherlands', metavar='<countryName>', nargs='*')
-    parser.add_argument('-s', '-sparkUrl', dest='sparkUrl', type=str, 
-        help='spark instance url (default: local)', required=False, default ='local', metavar='<url>')
-    
-    args = parser.parse_args(params)
-    return args.personalFileName, args.accountsFileName, args.outputFolderName, args.countryFilter, args.sparkUrl
-
-def loggerInit(loggerName: str):    
-    loggerI = logging.getLogger(loggerName)
-    loggerI.setLevel(level=logging.DEBUG)    
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handlerFile = logging.handlers.RotatingFileHandler('logs/test.log',maxBytes=10000,backupCount=5)
-    handlerFile.setFormatter(formatter)
-    loggerI.addHandler(handlerFile)
-    handlerConsole = logging.StreamHandler(stdout)
-    handlerConsole.setFormatter(formatter)
-    loggerI.addHandler(handlerConsole)
-    loggerI.debug('loggerInit finished')
-    return loggerI
-    
-logger = loggerInit(__name__)
-
-from pyspark.sql import DataFrame
 from typing import Dict, List
+from pyspark.sql import DataFrame, SparkSession
+from utils import get_config, get_parameters, logger_init
 
 
-def customFilter(df: DataFrame, filterMap: Dict[str, List[str]]) -> DataFrame:
-    logger.debug('customFilter started. filter:'+str(filterMap))
-    for column,valuesList in filterMap.items():
-        df = df.filter(df[column].isin(valuesList))
-        logger.debug('filter by column:'+column+' with values:'+str(valuesList))
+logger = logger_init(__name__)
+
+
+def custom_filter(df: DataFrame, filter_map: Dict[str, List[str]]) -> DataFrame:
+    """Filter DataFrame using filter_map."""
+    logger.debug(f"custom_filter started. filter_map:{filter_map}")
+    for column, values_list in filter_map.items():
+        df = df.filter(df[column].isin(values_list))
+        logger.debug(f"filter by column:{column} with values:{values_list}")
     return df
 
-def customRename(df: DataFrame, renameMap: Dict[str,str]) -> DataFrame:
-    logger.debug('customRename started. renameMap:'+str(renameMap))
-    df = df.withColumnsRenamed(renameMap)
-    return df
 
+def custom_rename(df: DataFrame, rename_map: Dict[str, str]) -> DataFrame:
+    """Rename DataFrame column using rename_map."""
+    logger.debug(f"custom_rename started. rename_map:{rename_map}")
+    df = df.withColumnsRenamed(rename_map)
+    return df
 
 
 def main():
-    logger.info('main started')
-    personalFileName, accountsFileName, outputFolderName, countryFilter, sparkUrl  = getParameters(argv[1:])
-    logger.debug('parameters. p:'+personalFileName+' a:'+accountsFileName+' o:'+outputFolderName+' c:'+str(countryFilter)+' u:'+sparkUrl)
-    
-    sparkSession = SparkSession.builder.appName('codac').master(sparkUrl).getOrCreate()
-    logger.debug('spark session created')
+    """start codacJoiner app that joins two input files into one filtering by country"""
+    logger.info("main started")
+    personal_fileName, accounts_fileName, country_filter = get_parameters(argv[1:])
+    logger.debug(
+        f"parameters. p:{personal_fileName} a:{accounts_fileName} c:{country_filter}"
+    )
 
-    dfPersonal = sparkSession.read.csv(path=personalFileName,header=True)
-    logger.info('opened Personal DataFrame from file:'+personalFileName)
+    config = get_config("codac.ini")
 
-    dfAccounts = sparkSession.read.csv(path=accountsFileName,header=True)
-    logger.info('opened Accounts DataFrame from file:'+accountsFileName)
+    spark_session = (
+        SparkSession.builder.appName("codac")
+        .master(config["SPARK"]["sparkUrl"])
+        .getOrCreate()
+    )
+    logger.debug("spark session created")
 
-    dfOut = dfPersonal.select('id','email','country')
-    logger.debug('created Out Dataframe with removed columns from Personal DataFrame')
+    df_personal = spark_session.read.csv(path=personal_fileName, header=True)
+    logger.info(f"opened Personal DataFrame from file:{personal_fileName}")
 
-    dfOut =  customFilter(dfOut,{'country':countryFilter}) #dfOut.filter(dfPersonal.country.isin(countryFilter))
-    logger.debug('filtered columns on Out DataFrame')
+    df_accounts = spark_session.read.csv(path=accounts_fileName, header=True)
+    logger.info(f"opened Accounts DataFrame from file:{accounts_fileName}")
 
-    dfOut = dfOut.join(dfAccounts,on=dfPersonal.id==dfAccounts.id,how='inner')
-    logger.debug('joined with Accounts DataFrame')
+    df_out = df_personal.select("id", "email", "country")
+    logger.debug("created Out Dataframe with removed columns from Personal DataFrame")
 
-    dfOut = dfOut.drop(dfAccounts.id)
-    logger.debug('removed duplicated join column from Out Dataframe')
+    df_out = custom_filter(df_out, {"country": country_filter})
+    logger.debug(
+        f"filtered columns on Out DataFrame with countryFilter:{country_filter}"
+    )
 
-    dfOut = customRename(dfOut,{'id':'client_identifier','btc_a':'bitcoin_address','cc_t':'credit_card_type'}) #dfOut.withColumnsRenamed({'id':'client_identifier','btc_a':'bitcoin_address','cc_t':'credit_card_type'})
-    logger.debug('renamed columns on Out DataFrame')
+    df_out = df_out.join(df_accounts, on=df_personal.id == df_accounts.id, how="inner")
+    logger.debug("joined with Accounts DataFrame")
 
-    logger.debug('dfOut count:'+str(dfOut.count()))
+    df_out = df_out.drop(df_accounts.id)
+    logger.debug("removed duplicated join column from Out Dataframe")
 
-    dfOut.write.csv(outputFolderName,header=True,mode='overwrite')
-    logger.info('saved Out Dataframe to folder:'+outputFolderName)
+    df_out = custom_rename(df_out, json_loads(config["LOGIC"]["renameMap"]))
+    logger.debug(
+        f'renamed columns on Out DataFrame with renameMap:{json_loads(config["LOGIC"]["renameMap"])}'
+    )
 
-if __name__ == '__main__':
+    logger.debug("df_out count:" + str(df_out.count()))
+
+    df_out.write.csv(config["SPARK"]["outputFolderName"], header=True, mode="overwrite")
+    logger.info(f'saved Out Dataframe to folder:{config["SPARK"]["outputFolderName"]}')
+
+
+if __name__ == "__main__":
     main()

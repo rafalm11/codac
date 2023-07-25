@@ -7,10 +7,8 @@ name = "codacJoiner"
 version = "1.0.0"
 readme = "README.md"
 requires-python = ">=3.7"
+dependencies = ["pyspark"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 exclude = ["tests", "doc"]
-
-[project.scripts]
-Codac = "codacJoiner.main:main"
