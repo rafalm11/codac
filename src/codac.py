@@ -9,7 +9,7 @@ logger = logger_init(__name__)
 
 
 def custom_filter(df: DataFrame, filter_map: Dict[str, List[str]]) -> DataFrame:
-    logger.debug(f"customFilter started. filter:{filter_map}")
+    logger.debug(f"custom_filter started. filter_map:{filter_map}")
     for column, values_list in filter_map.items():
         df = df.filter(df[column].isin(values_list))
         logger.debug(f"filter by column:{column} with values:{values_list}")
@@ -17,8 +17,8 @@ def custom_filter(df: DataFrame, filter_map: Dict[str, List[str]]) -> DataFrame:
 
 
 def custom_rename(df: DataFrame, rename_map: Dict[str, str]) -> DataFrame:
-    logger.debug(f"customRename started. renameMap:{rename_map}")
-    df = df.withColumnsRenamed(renameMap)
+    logger.debug(f"custom_rename started. rename_map:{rename_map}")
+    df = df.withColumnsRenamed(rename_map)
     return df
 
 
