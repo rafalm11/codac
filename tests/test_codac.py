@@ -2,7 +2,7 @@ import pytest
 import chispa
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
-from codac import customFilter, customRename
+from codac import custom_filter, custom_rename
 
 
 @pytest.fixture
@@ -11,7 +11,7 @@ def spark():
 
 
 @pytest.fixture
-def sourceData():
+def source_data():
     return [
         ("name1", "surname1", "country1"),
         ("name2", "surname2", "country1"),
@@ -21,7 +21,7 @@ def sourceData():
 
 
 @pytest.fixture
-def sourceSchema():
+def source_schema():
     return StructType(
         [
             StructField("name", StringType()),
@@ -32,42 +32,42 @@ def sourceSchema():
 
 
 @pytest.fixture
-def dfSource(spark, sourceData, sourceSchema):
-    return spark.createDataFrame(sourceData, sourceSchema)
+def df_source(spark, source_data, source_schema):
+    return spark.createDataFrame(source_data, source_schema)
 
 
-def test_customFilter_1country(spark, dfSource, sourceSchema):
-    dfExpected = spark.createDataFrame(
+def test_custom_filter_1_country(spark, df_source, source_schema):
+    df_expected = spark.createDataFrame(
         [
             ("name1", "surname1", "country1"),
             ("name2", "surname2", "country1"),
             ("name4", "surname4", "country4"),
         ],
-        sourceSchema,
+        source_schema,
     )
 
     chispa.assert_df_equality(
-        customFilter(dfSource, {"country": ["country1", "country4"]}), dfExpected
+        custom_filter(df_source, {"country": ["country1", "country4"]}), df_expected
     )
 
 
-def test_custom_filter_2countries(spark, dfSource, sourceSchema):
-    dfExpected = spark.createDataFrame(
+def test_custom_filter_2_countries(spark, df_source, source_schema):
+    df_expected = spark.createDataFrame(
         [("name1", "surname1", "country1"), ("name2", "surname2", "country1")],
-        sourceSchema,
+        source_schema,
     )
 
     chispa.assert_df_equality(
-        customFilter(dfSource, {"country": "country1"}), dfExpected
+        custom_filter(df_source, {"country": "country1"}), df_expected
     )
 
 
-def test_customRename(spark, sourceData, dfSource):
-    dfExpected = spark.createDataFrame(sourceData, ["firstname", "lastname", "country"])
+def test_custom_rename(spark, source_data, df_source):
+    dfE_expected = spark.createDataFrame(source_data, ["firstname", "lastname", "country"])
 
     chispa.assert_df_equality(
-        customRename(
-            df=dfSource, renameMap={"name": "firstname", "surname": "lastname"}
+        custom_rename(
+            df=df_source, rename_map={"name": "firstname", "surname": "lastname"}
         ),
-        dfExpected,
+        df_expected,
     )

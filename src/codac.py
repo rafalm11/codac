@@ -2,70 +2,70 @@ from json import loads as json_loads
 from sys import argv
 from typing import Dict, List
 from pyspark.sql import DataFrame, SparkSession
-from utils import getConfig, getParameters, loggerInit
+from utils import get_config, get_parameters, logger_init
 
 
-logger = loggerInit(__name__)
+logger = logger_init(__name__)
 
 
-def customFilter(df: DataFrame, filterMap: Dict[str, List[str]]) -> DataFrame:
-    logger.debug(f"customFilter started. filter:{filterMap}")
-    for column, valuesList in filterMap.items():
-        df = df.filter(df[column].isin(valuesList))
-        logger.debug(f"filter by column:{column} with values:{valuesList}")
+def custom_filter(df: DataFrame, filter_map: Dict[str, List[str]]) -> DataFrame:
+    logger.debug(f"customFilter started. filter:{filter_map}")
+    for column, values_list in filter_map.items():
+        df = df.filter(df[column].isin(values_list))
+        logger.debug(f"filter by column:{column} with values:{values_list}")
     return df
 
 
-def customRename(df: DataFrame, renameMap: Dict[str, str]) -> DataFrame:
-    logger.debug(f"customRename started. renameMap:{renameMap}")
+def custom_rename(df: DataFrame, rename_map: Dict[str, str]) -> DataFrame:
+    logger.debug(f"customRename started. renameMap:{rename_map}")
     df = df.withColumnsRenamed(renameMap)
     return df
 
 
 def main():
     logger.info("main started")
-    personalFileName, accountsFileName, countryFilter = getParameters(argv[1:])
+    personal_fileName, accounts_fileName, country_filter = get_parameters(argv[1:])
     logger.debug(
-        f"parameters. p:{personalFileName} a:{accountsFileName} c:{countryFilter}"
+        f"parameters. p:{personal_fileName} a:{accounts_fileName} c:{country_filter}"
     )
 
     config = getConfig("codac.ini")
 
-    sparkSession = (
+    spark_session = (
         SparkSession.builder.appName("codac")
         .master(config["SPARK"]["sparkUrl"])
         .getOrCreate()
     )
     logger.debug("spark session created")
 
-    dfPersonal = sparkSession.read.csv(path=personalFileName, header=True)
-    logger.info(f"opened Personal DataFrame from file:{personalFileName}")
+    df_personal = spark_session.read.csv(path=personal_fileName, header=True)
+    logger.info(f"opened Personal DataFrame from file:{personal_fileName}")
 
-    dfAccounts = sparkSession.read.csv(path=accountsFileName, header=True)
-    logger.info(f"opened Accounts DataFrame from file:{accountsFileName}")
+    df_accounts = spark_session.read.csv(path=accounts_fileName, header=True)
+    logger.info(f"opened Accounts DataFrame from file:{accounts_fileName}")
 
-    dfOut = dfPersonal.select("id", "email", "country")
+    df_out = df_personal.select("id", "email", "country")
     logger.debug("created Out Dataframe with removed columns from Personal DataFrame")
 
-    dfOut = customFilter(dfOut, {"country": countryFilter})
+    df_out = custom_filter(dfOut, {"country": country_filter})
     logger.debug(
-        f"filtered columns on Out DataFrame with countryFilter:{countryFilter}"
+        f"filtered columns on Out DataFrame with countryFilter:{country_filter}"
     )
 
-    dfOut = dfOut.join(dfAccounts, on=dfPersonal.id == dfAccounts.id, how="inner")
+    df_out = df_out.join(df_accounts, on=df_personal.id == df_accounts.id, how="inner")
     logger.debug("joined with Accounts DataFrame")
 
-    dfOut = dfOut.drop(dfAccounts.id)
+    df_out = df_out.drop(df_accounts.id)
     logger.debug("removed duplicated join column from Out Dataframe")
 
-    dfOut = customRename(dfOut, json_loads(config["LOGIC"]["renameMap"]))
+    df_out = custom_rename(dfOut, json_loads(config["LOGIC"]["renameMap"]))
     logger.debug(
         f'renamed columns on Out DataFrame with renameMap:{json_loads(config["LOGIC"]["renameMap"])}'
     )
 
-    logger.debug("dfOut count:" + str(dfOut.count()))
+    logger.debug("df_out count:" + str(df_out.count()))
 
-    dfOut.write.csv(config["SPARK"]["outputFolderName"], header=True, mode="overwrite")
+    df_out.write.csv(config["SPARK"]["outputFolderName"], header=True, mode="overwrite")
     logger.info(f'saved Out Dataframe to folder:{config["SPARK"]["outputFolderName"]}')
 
 

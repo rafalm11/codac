@@ -6,17 +6,17 @@ from sys import stdout
 from typing import Tuple
 
 
-def getConfig(fileName: str) -> ConfigParser:
+def get_config(fileName: str) -> ConfigParser:
     config = ConfigParser()
     config.read(fileName)
     return config
 
 
-def getParameters(params: list) -> Tuple[str]:
+def get_parameters(params: list) -> Tuple[str]:
     # function takes parameters list to ease testing
-    logger.debug("getParameters started")
+    logger.debug("get_parameters started")
 
-    config = getConfig("codac.ini")
+    config = get_config("codac.ini")
 
     parser = ArgumentParser(
         prog="codac.py", description="joins customer personal data with its accounts"
@@ -58,8 +58,8 @@ def getParameters(params: list) -> Tuple[str]:
     return args.personalFileName, args.accountsFileName, args.countryFilter
 
 
-def loggerInit(loggerName: str) -> logging.Logger:
-    config = getConfig("codac.ini")
+def logger_init(loggerName: str) -> logging.Logger:
+    config = get_config("codac.ini")
 
     loggerI = logging.getLogger(loggerName)
     loggerI.setLevel(level=logging.DEBUG)
@@ -78,4 +78,4 @@ def loggerInit(loggerName: str) -> logging.Logger:
     return loggerI
 
 
-logger = loggerInit(__name__)
+logger = logger_init(__name__)
