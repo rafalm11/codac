@@ -29,7 +29,7 @@ def main():
         f"parameters. p:{personal_fileName} a:{accounts_fileName} c:{country_filter}"
     )
 
-    config = getConfig("codac.ini")
+    config = get_config("codac.ini")
 
     spark_session = (
         SparkSession.builder.appName("codac")
