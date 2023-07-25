@@ -1,8 +1,7 @@
-from json import loads as json_loads
+import logging
 import pytest
+from json import loads as json_loads
 from utils import get_parameters, logger_init, get_config
-
-# test get_arameters
 
 
 def test_parameters_3_countries():
@@ -30,15 +29,10 @@ def test_missing_file_names():
         get_parameters(["-c", "c1"])
 
 
-# test logging
-
-
 def test_log(caplog):
-    get_parameters(["-p", "aaa.csv", "-a", "bbb.csv"])
-    assert "get_parameters started" in caplog.text
-
-
-# test config
+    logger = logger_init(__name__)
+    logger.debug("abc logger test")
+    assert "abc logger test" in caplog.text
 
 
 def test_config():

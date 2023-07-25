@@ -1,25 +1,25 @@
+import logging
 from argparse import ArgumentParser
 from configparser import ConfigParser
 from logging.handlers import RotatingFileHandler
-import logging
 from sys import stdout
 from typing import Tuple
 
 
 def get_config(fileName: str) -> ConfigParser:
+    """Return config object that holds parameters defined in .ini file."""
     config = ConfigParser()
     config.read(fileName)
     return config
 
 
 def get_parameters(params: list) -> Tuple[str]:
-    # function takes parameters list to ease testing
-    logger.debug("get_parameters started")
+    """Get calling parameters."""
 
     config = get_config("codac.ini")
 
     parser = ArgumentParser(
-        prog="codac.py", description="joins customer personal data with its accounts"
+        prog="codac.py", description="joins customer personal data with its accounts."
     )
     # required parameters
     parser.add_argument(
@@ -59,6 +59,7 @@ def get_parameters(params: list) -> Tuple[str]:
 
 
 def logger_init(loggerName: str) -> logging.Logger:
+    """Initialize logger object."""
     config = get_config("codac.ini")
 
     loggerI = logging.getLogger(loggerName)
@@ -76,6 +77,3 @@ def logger_init(loggerName: str) -> logging.Logger:
     loggerI.addHandler(handlerConsole)
     loggerI.debug("loggerInit finished")
     return loggerI
-
-
-logger = logger_init(__name__)

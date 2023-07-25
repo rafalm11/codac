@@ -9,6 +9,7 @@ logger = logger_init(__name__)
 
 
 def custom_filter(df: DataFrame, filter_map: Dict[str, List[str]]) -> DataFrame:
+    """Filter DataFrame using filter_map."""
     logger.debug(f"custom_filter started. filter_map:{filter_map}")
     for column, values_list in filter_map.items():
         df = df.filter(df[column].isin(values_list))
@@ -17,12 +18,14 @@ def custom_filter(df: DataFrame, filter_map: Dict[str, List[str]]) -> DataFrame:
 
 
 def custom_rename(df: DataFrame, rename_map: Dict[str, str]) -> DataFrame:
+    """Rename DataFrame column using rename_map."""
     logger.debug(f"custom_rename started. rename_map:{rename_map}")
     df = df.withColumnsRenamed(rename_map)
     return df
 
 
 def main():
+    """start codacJoiner app that joins two input files into one filtering by country"""
     logger.info("main started")
     personal_fileName, accounts_fileName, country_filter = get_parameters(argv[1:])
     logger.debug(
