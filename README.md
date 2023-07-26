@@ -45,7 +45,7 @@ optional arguments:
                         consumer's accounts data file (csv)
   -c [<countryName> [<countryName> ...]], -countryFilter [<countryName> [<countryName> ...]]
                         list of countries to filter by (default: specified in
-                        utils.ini)
+                        codac.ini)
 ```
 
 ## use examples
