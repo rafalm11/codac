@@ -47,7 +47,7 @@ def get_parameters(params: list) -> Tuple[str]:
         "-countryFilter",
         dest="countryFilter",
         type=str,
-        help="list of countries to filter by (default: specified in utils.ini)",
+        help="list of countries to filter by (default: specified in codac.ini)",
         required=False,
         default=config["DEFAULT"]["countryFilter"],
         metavar="<countryName>",
